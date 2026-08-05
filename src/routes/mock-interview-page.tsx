@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Interview } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,7 +7,7 @@ import { db } from "@/config/firebase.config";
 import { CustomBreadCrumb } from "@/components/custom-bread-crumb";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Video, ShieldCheck } from "lucide-react";
 import { QuestionSection } from "@/components/question-section";
 
 export const MockInterviewPage = () => {
@@ -68,28 +67,43 @@ export const MockInterviewPage = () => {
       />
 
       <div className="w-full">
-        <Alert className="bg-sky-100 border border-sky-200 p-4 rounded-lg flex items-start gap-3">
-          <Lightbulb className="h-5 w-5 text-sky-600" />
-          <div>
-            <AlertTitle className="text-sky-800 font-semibold">
-              Important Note
+        <Alert variant="info" className="p-6 rounded-2xl">
+          <Lightbulb className="h-5 w-5" />
+          <div className="ml-1">
+            <AlertTitle className="text-base font-semibold mb-2">
+              Before You Start
             </AlertTitle>
-            <AlertDescription className="text-sm text-sky-700 mt-1 leading-relaxed">
-              Press "Record Answer" to begin answering the question. Once you
-              finish the interview, you&apos;ll receive feedback comparing your
-              responses with the ideal answers.
-              <br />
-              <br />
-              <strong>Note:</strong>{" "}
-              <span className="font-medium">Your video is never recorded.</span>{" "}
-              You can disable the webcam anytime if preferred.
+            <AlertDescription className="text-sm leading-relaxed opacity-95 space-y-3">
+              <p>
+                Press <span className="font-semibold">&ldquo;Record Answer&rdquo;</span> to begin answering the question.
+                Once you finish the interview, you&apos;ll receive detailed feedback comparing your
+                responses with the ideal answers.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-3 mt-3 border-t border-primary/15">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/15">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs font-medium">
+                    <strong>Your video is never recorded.</strong> You can disable the webcam anytime.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/15">
+                    <Video className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs font-medium">
+                    Practice with the camera on or off - it&apos;s up to you!
+                  </p>
+                </div>
+              </div>
             </AlertDescription>
           </div>
         </Alert>
       </div>
 
       {interview?.questions && interview?.questions.length > 0 && (
-        <div className="mt-4 w-full flex flex-col items-start gap-4">
+        <div className="mt-2 w-full flex flex-col items-start gap-4">
           <QuestionSection questions={interview?.questions} />
         </div>
       )}

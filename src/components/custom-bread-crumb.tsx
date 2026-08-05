@@ -20,13 +20,13 @@ export const CustomBreadCrumb = ({
 }: CustomBreadCrumbProps) => {
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="text-sm">
         <BreadcrumbItem>
           <BreadcrumbLink
             href="/"
-            className="flex items-center justify-center hover:text-emerald-500"
+            className="flex items-center justify-center hover:text-primary transition-colors duration-200 text-muted-foreground"
           >
-            <Home className="w-3 h-3 mr-2" />
+            <Home className="w-3.5 h-3.5 mr-1.5" />
             Home
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -34,20 +34,20 @@ export const CustomBreadCrumb = ({
         {breadCrumpItems &&
           breadCrumpItems.map((item, i) => (
             <React.Fragment key={i}>
-              <BreadcrumbSeparator />
+              <BreadcrumbSeparator className="text-muted-foreground/40" />
               <BreadcrumbItem>
                 <BreadcrumbLink
                   href={item.link}
-                  className="hover:text-emerald-500"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-200"
                 >
                   {item.label}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </React.Fragment>
           ))}
-        <BreadcrumbSeparator />
+        <BreadcrumbSeparator className="text-muted-foreground/40" />
         <BreadcrumbItem>
-          <BreadcrumbPage>{breadCrumbPage}</BreadcrumbPage>
+          <BreadcrumbPage className="text-foreground font-medium">{breadCrumbPage}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

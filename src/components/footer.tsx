@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"; // Import Lucide icons
+import { Facebook, Twitter, Instagram, Linkedin, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Container } from "@/components/container";
 import { MainRoutes } from "@/lib/helpers";
@@ -8,16 +8,15 @@ import { MainRoutes } from "@/lib/helpers";
 interface SocialLinkProps {
   href: string;
   icon: React.ReactNode;
-  hoverColor: string;
 }
 
-const SocialLink: React.FC<SocialLinkProps> = ({ href, icon, hoverColor }) => {
+const SocialLink: React.FC<SocialLinkProps> = ({ href, icon }) => {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`hover:${hoverColor}`}
+      className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200"
     >
       {icon}
     </a>
@@ -34,7 +33,7 @@ const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
     <li>
       <Link
         to={to}
-        className="hover:underline text-gray-300 hover:text-gray-100"
+        className="text-sm text-gray-400 hover:text-white transition-colors duration-200 leading-relaxed"
       >
         {children}
       </Link>
@@ -44,76 +43,112 @@ const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
 
 export const Footer = () => {
   return (
-    <div className="w-full bg-black text-gray-300 hover:text-gray-100 py-8">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* First Column: Links */}
-          <div>
-            <h3 className="font-bold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {MainRoutes.map((route) => (
-                <FooterLink key={route.href} to={route.href}>
-                  {route.label}
+    <div className="w-full bg-[#0F172A] text-gray-300 mt-16">
+      <div className="border-t border-white/5">
+        <Container className="py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+            <div className="lg:col-span-1">
+              <Link to={"/"} className="flex items-center gap-2 mb-6">
+                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-primary">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex flex-col leading-none">
+                  <span className="text-base font-bold tracking-tight text-white">
+                    InterviewAI
+                  </span>
+                  <span className="text-[10px] font-medium text-gray-400 tracking-wider uppercase">
+                    Mock Platform
+                  </span>
+                </div>
+              </Link>
+              <p className="text-sm leading-relaxed text-gray-400 mb-6">
+                We are committed to helping you unlock your full potential with
+                AI-powered tools.
+              </p>
+              <div className="flex gap-3">
+                <SocialLink
+                  href="https://facebook.com"
+                  icon={<Facebook size={18} />}
+                />
+                <SocialLink
+                  href="https://twitter.com"
+                  icon={<Twitter size={18} />}
+                />
+                <SocialLink
+                  href="https://instagram.com"
+                  icon={<Instagram size={18} />}
+                />
+                <SocialLink
+                  href="https://linkedin.com"
+                  icon={<Linkedin size={18} />}
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-base mb-5 text-white">
+                Quick Links
+              </h3>
+              <ul className="space-y-3">
+                {MainRoutes.map((route) => (
+                  <FooterLink key={route.href} to={route.href}>
+                    {route.label}
+                  </FooterLink>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-base mb-5 text-white">
+                Services
+              </h3>
+              <ul className="space-y-3">
+                <FooterLink to="/services#ai-mock-interviews">
+                  Interview Preparation
                 </FooterLink>
-              ))}
-            </ul>
-          </div>
+                <FooterLink to="/services#career-coaching">
+                  Career Coaching
+                </FooterLink>
+                <FooterLink to="/services#resume-review">
+                  Resume Review
+                </FooterLink>
+              </ul>
+            </div>
 
-          {/* Second Column: About Us */}
-          <div>
-            <h3 className="font-bold text-lg mb-4">About Us</h3>
-            <p>
-              We are committed to helping you unlock your full potential with
-              AI-powered tools. Our platform offers a wide range of resources to
-              improve your interview skills and chances of success.
-            </p>
-          </div>
-
-          {/* Third Column: Services */}
-          <div>
-            <h3 className="font-bold text-lg mb-4">Services</h3>
-            <ul>
-              <FooterLink to="/services/interview-prep">
-                Interview Preparation
-              </FooterLink>
-              <FooterLink to="/services/career-coaching">
-                Career Coaching
-              </FooterLink>
-              <FooterLink to="/services/resume-building">
-                Resume Building
-              </FooterLink>
-            </ul>
-          </div>
-
-          {/* Fourth Column: Address and Social Media */}
-          <div>
-            <h3 className="font-bold text-lg mb-4">Contact Us</h3>
-            <p className="mb-4">123 AI Street, Tech City, 12345</p>
-            <div className="flex gap-4">
-              <SocialLink
-                href="https://facebook.com"
-                icon={<Facebook size={24} />}
-                hoverColor="text-blue-500"
-              />
-              <SocialLink
-                href="https://twitter.com"
-                icon={<Twitter size={24} />}
-                hoverColor="text-blue-400"
-              />
-              <SocialLink
-                href="https://instagram.com"
-                icon={<Instagram size={24} />}
-                hoverColor="text-pink-500"
-              />
-              <SocialLink
-                href="https://linkedin.com"
-                icon={<Linkedin size={24} />}
-                hoverColor="text-blue-700"
-              />
+            <div>
+              <h3 className="font-semibold text-base mb-5 text-white">
+                Contact Us
+              </h3>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  123 AI Street, Tech City, 12345
+                </p>
+                <p className="text-sm text-gray-400">support@interviewai.com</p>
+              </div>
             </div>
           </div>
-        </div>
-      </Container>
+
+          <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} InterviewAI. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <Link
+                to="/contact#privacy-policy"
+                className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-200"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="/contact#terms-of-service"
+                className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-200"
+              >
+                Terms of Service
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </div>
     </div>
   );
 };

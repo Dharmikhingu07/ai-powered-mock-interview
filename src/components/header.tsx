@@ -12,23 +12,23 @@ const Header = () => {
 
   return (
     <header
-      className={cn("w-full border-b duration-150 transition-all ease-in-out")}
+      className={cn(
+        "w-full sticky top-0 z-40 bg-card/80 backdrop-blur-xl border-b border-border/60 transition-all duration-300"
+      )}
     >
-      <Container>
-        <div className="flex items-center gap-4 w-full">
-          {/* logo section */}
+      <Container className="py-0">
+        <div className="flex items-center gap-4 w-full h-16 md:h-20">
           <LogoContainer />
 
-          {/* navigation section */}
-          <nav className="hidden md:flex items-center gap-3">
+          <nav className="hidden md:flex items-center gap-1 ml-8">
             <NavigationRoutes />
             {userId && (
               <NavLink
                 to={"/generate"}
                 className={({ isActive }) =>
                   cn(
-                    "text-base text-neutral-600",
-                    isActive && "text-neutral-900 font-semibold"
+                    "text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-200 rounded-xl px-3.5 py-2 hover:bg-muted/70",
+                    isActive && "text-foreground bg-muted font-semibold"
                   )
                 }
               >
@@ -37,11 +37,8 @@ const Header = () => {
             )}
           </nav>
 
-          <div className="ml-auto flex items-center gap-6">
-            {/* profile section */}
+          <div className="ml-auto flex items-center gap-3">
             <ProfileContainer />
-
-            {/* mobile toggle section */}
             <ToggleContainer />
           </div>
         </div>

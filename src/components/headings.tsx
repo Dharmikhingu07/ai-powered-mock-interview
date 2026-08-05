@@ -12,17 +12,17 @@ export const Headings = ({
   isSubHeading = false,
 }: HeadingsProps) => {
   return (
-    <div>
+    <div className="space-y-1.5">
       <h2
         className={cn(
-          "text-2xl md:text-3xl text-gray-800 font-semibold font-sans",
-          isSubHeading && "text-lg md:text-xl"
+          "text-2xl md:text-3xl font-bold tracking-tight text-foreground",
+          isSubHeading && "text-lg md:text-xl font-semibold"
         )}
       >
         {title}
       </h2>
       {description && (
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-base leading-relaxed text-muted-foreground">{description}</p>
       )}
     </div>
   );

@@ -11,7 +11,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { toast } from "sonner";
 import { Headings } from "./headings";
 import { Button } from "./ui/button";
-import { Loader, Trash2 } from "lucide-react";
+import { Loader, Trash2, Sparkles, Briefcase, FileText, Clock, Layers } from "lucide-react";
 import { Separator } from "./ui/separator";
 import {
   FormControl,
@@ -31,6 +31,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/config/firebase.config";
+import { Card } from "./ui/card";
 
 interface FormMockInterviewProps {
   initialData: Interview | null;
@@ -66,19 +67,14 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     : "Create a new mock interview";
 
   const breadCrumpPage = initialData ? initialData?.position : "Create";
-  const actions = initialData ? "Save Changes" : "Create";
+  const actions = initialData ? "Save Changes" : "Create Interview";
   const toastMessage = initialData
     ? { title: "Updated..!", description: "Changes saved successfully..." }
     : { title: "Created..!", description: "New Mock Interview created..." };
 
   const cleanAiResponse = (responseText: string) => {
-    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
-
-    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
     cleanText = cleanText.replace(/(json|```|`)/g, "");
-
-    // Step 3: Extract a JSON array by capturing text between square brackets
     const jsonArrayMatch = cleanText.match(/\[.*\]/s);
     if (jsonArrayMatch) {
       cleanText = jsonArrayMatch[0];
@@ -86,7 +82,6 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
       throw new Error("No JSON array found in response");
     }
 
-    // Step 4: Parse the clean JSON text into an array of objects
     try {
       return JSON.parse(cleanText);
     } catch (error) {
@@ -215,143 +210,160 @@ export const FormMockInterview = ({ initialData }: FormMockInterviewProps) => {
     }
   }, [initialData, form]);
 
+  const fields = [
+    {
+      name: "position" as const,
+      label: "Job Role / Job Position",
+      placeholder: "e.g. Full Stack Developer",
+      icon: Briefcase,
+      description: "Enter the position or job role you're interviewing for",
+    },
+    {
+      name: "description" as const,
+      label: "Job Description",
+      placeholder: "Describe the job role, responsibilities, and requirements...",
+      icon: FileText,
+      description: "Provide a detailed description to generate relevant questions",
+      textarea: true,
+    },
+    {
+      name: "experience" as const,
+      label: "Years of Experience",
+      placeholder: "e.g. 5",
+      icon: Clock,
+      description: "Specify the required years of experience",
+      type: "number",
+    },
+    {
+      name: "techStack" as const,
+      label: "Tech Stacks",
+      placeholder: "e.g. React, TypeScript, Node.js, PostgreSQL",
+      icon: Layers,
+      description: "List the technologies, separated by commas, that should be covered",
+      textarea: true,
+    },
+  ];
+
   return (
-    <div className="w-full flex-col space-y-4">
+    <div className="w-full flex-col space-y-6">
       <CustomBreadCrumb
         breadCrumbPage={breadCrumpPage}
         breadCrumpItems={[{ label: "Mock Interviews", link: "/generate" }]}
       />
 
-      <div className="mt-4 flex items-center justify-between w-full">
+      <div className="mt-2 flex items-center justify-between w-full">
         <Headings title={title} isSubHeading />
 
         {initialData && (
-          <Button size={"icon"} variant={"ghost"}>
-            <Trash2 className="min-w-4 min-h-4 text-red-500" />
+          <Button size={"icon"} variant={"ghost"} className="hover:text-error hover:bg-error/10">
+            <Trash2 className="min-w-4 min-h-4" />
           </Button>
         )}
       </div>
 
-      <Separator className="my-4" />
-
-      <div className="my-6"></div>
+      <Separator className="my-2" />
 
       <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full p-8 rounded-lg flex-col flex items-start justify-start gap-6 shadow-md "
-        >
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-4">
-                <div className="w-full flex items-center justify-between">
-                  <FormLabel>Job Role / Job Position</FormLabel>
-                  <FormMessage className="text-sm" />
-                </div>
-                <FormControl>
-                  <Input
-                    className="h-12"
-                    disabled={loading}
-                    placeholder="eg:- Full Stack Developer"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-4">
-                <div className="w-full flex items-center justify-between">
-                  <FormLabel>Job Description</FormLabel>
-                  <FormMessage className="text-sm" />
-                </div>
-                <FormControl>
-                  <Textarea
-                    className="h-12"
-                    disabled={loading}
-                    placeholder="eg:- describle your job role"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="experience"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-4">
-                <div className="w-full flex items-center justify-between">
-                  <FormLabel>Years of Experience</FormLabel>
-                  <FormMessage className="text-sm" />
-                </div>
-                <FormControl>
-                  <Input
-                    type="number"
-                    className="h-12"
-                    disabled={loading}
-                    placeholder="eg:- 5 Years"
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="techStack"
-            render={({ field }) => (
-              <FormItem className="w-full space-y-4">
-                <div className="w-full flex items-center justify-between">
-                  <FormLabel>Tech Stacks</FormLabel>
-                  <FormMessage className="text-sm" />
-                </div>
-                <FormControl>
-                  <Textarea
-                    className="h-12"
-                    disabled={loading}
-                    placeholder="eg:- React, Typescript..."
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <div className="w-full flex items-center justify-end gap-6">
-            <Button
-              type="reset"
-              size={"sm"}
-              variant={"outline"}
-              disabled={isSubmitting || loading}
-            >
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              size={"sm"}
-              disabled={isSubmitting || !isValid || loading}
-            >
-              {loading ? (
-                <Loader className="text-gray-50 animate-spin" />
-              ) : (
-                actions
-              )}
-            </Button>
+        <Card className="!hover:!shadow-card p-0 overflow-hidden !cursor-default">
+          <div className="p-2 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-b border-border">
+            <div className="p-5 md:p-7 flex items-center gap-4">
+              <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-primary shadow-button">
+                <Sparkles className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg md:text-xl font-semibold tracking-tight text-foreground mb-1">
+                  {initialData ? "Update Interview Setup" : "Configure Interview"}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Fill in the details below and let our AI generate 5 tailored interview questions for you
+                </p>
+              </div>
+            </div>
           </div>
-        </form>
+
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full p-7 md:p-10 flex-col flex items-start justify-start gap-8"
+          >
+            {fields.map((field) => {
+              const Icon = field.icon;
+              return (
+                <FormField
+                  key={field.name}
+                  control={form.control}
+                  name={field.name}
+                  render={({ fieldState, formState, ...fieldProps }) => (
+                    <FormItem className="w-full space-y-3">
+                      <div className="w-full flex items-start justify-between gap-4">
+                        <div>
+                          <FormLabel className="flex items-center gap-2">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            {field.label}
+                          </FormLabel>
+                          {field.description && (
+                            <p className="text-xs text-muted-foreground mt-2 ml-10">{field.description}</p>
+                          )}
+                        </div>
+                        <FormMessage className="text-sm text-right" />
+                      </div>
+                      <FormControl>
+                        {field.textarea ? (
+                          <Textarea
+                            className="min-h-[120px]"
+                            disabled={loading}
+                            placeholder={field.placeholder}
+                            {...fieldProps.field}
+                            value={fieldProps.field.value || ""}
+                          />
+                        ) : (
+                          <Input
+                            type={field.type || "text"}
+                            disabled={loading}
+                            placeholder={field.placeholder}
+                            {...fieldProps.field}
+                            value={fieldProps.field.value || ""}
+                          />
+                        )}
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              );
+            })}
+
+            <div className="w-full flex flex-col-reverse sm:flex-row items-center sm:justify-end gap-3 pt-4 border-t border-border mt-2">
+              <Button
+                type="reset"
+                size={"sm"}
+                variant={"outline"}
+                disabled={isSubmitting || loading}
+                className="w-full sm:w-auto"
+              >
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                size={"sm"}
+                disabled={isSubmitting || !isValid || loading}
+                className="w-full sm:w-auto min-w-[180px]"
+              >
+                {loading ? (
+                  <>
+                    <Loader className="text-white animate-spin w-4 h-4" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    {actions}
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Card>
       </FormProvider>
     </div>
   );

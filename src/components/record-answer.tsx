@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAuth } from "@clerk/clerk-react";
 import {
   CircleStop,
@@ -10,6 +9,7 @@ import {
   VideoOff,
   WebcamIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import useSpeechToText, { ResultType } from "react-hook-speech-to-text";
 import { useParams } from "react-router-dom";
@@ -27,6 +27,9 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/config/firebase.config";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 interface RecordAnswerProps {
   question: { question: string; answer: string };
@@ -76,7 +79,6 @@ export const RecordAnswer = ({
         return;
       }
 
-      //   ai result
       const aiResult = await generateResult(
         question.question,
         question.answer,
@@ -90,13 +92,9 @@ export const RecordAnswer = ({
   };
 
   const cleanJsonResponse = (responseText: string) => {
-    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
-
-    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
     cleanText = cleanText.replace(/(json|```|`)/g, "");
 
-    // Step 3: Parse the clean JSON text into an array of objects
     try {
       return JSON.parse(cleanText);
     } catch (error) {
@@ -138,6 +136,7 @@ export const RecordAnswer = ({
 
   const recordNewAnswer = () => {
     setUserAnswer("");
+    setAiResult(null);
     stopSpeechToText();
     startSpeechToText();
   };
@@ -151,8 +150,6 @@ export const RecordAnswer = ({
 
     const currentQuestion = question.question;
     try {
-      // query the firbase to check if the user answer already exists for this question
-
       const userAnswerQuery = query(
         collection(db, "userAnswers"),
         where("userId", "==", userId),
@@ -161,7 +158,6 @@ export const RecordAnswer = ({
 
       const querySnap = await getDocs(userAnswerQuery);
 
-      // if the user already answerd the question dont save it again
       if (!querySnap.empty) {
         console.log("Query Snap Size", querySnap.size);
         toast.info("Already Answered", {
@@ -169,8 +165,6 @@ export const RecordAnswer = ({
         });
         return;
       } else {
-        // save the user answer
-
         await addDoc(collection(db, "userAnswers"), {
           mockIdRef: interviewId,
           question: question.question,
@@ -186,6 +180,7 @@ export const RecordAnswer = ({
       }
 
       setUserAnswer("");
+      setAiResult(null);
       stopSpeechToText();
     } catch (error) {
       toast("Error", {
@@ -208,8 +203,7 @@ export const RecordAnswer = ({
   }, [results]);
 
   return (
-    <div className="w-full flex flex-col items-center gap-8 mt-4">
-      {/* save modal */}
+    <div className="w-full flex flex-col items-center gap-8">
       <SaveModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -217,76 +211,158 @@ export const RecordAnswer = ({
         loading={loading}
       />
 
-      <div className="w-full h-[400px] md:w-96 flex flex-col items-center justify-center border p-4 bg-gray-50 rounded-md">
-        {isWebCam ? (
-          <WebCam
-            onUserMedia={() => setIsWebCam(true)}
-            onUserMediaError={() => setIsWebCam(false)}
-            className="w-full h-full object-cover rounded-md"
-          />
-        ) : (
-          <WebcamIcon className="min-w-24 min-h-24 text-muted-foreground" />
-        )}
-      </div>
-
-      <div className="flex itece justify-center gap-3">
-        <TooltipButton
-          content={isWebCam ? "Turn Off" : "Turn On"}
-          icon={
-            isWebCam ? (
-              <VideoOff className="min-w-5 min-h-5" />
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 flex flex-col items-center justify-center gap-4">
+          <Card className="!hover:!shadow-card !cursor-default w-full overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-full min-h-[320px] p-0 flex items-center justify-center bg-muted/30">
+            {isWebCam ? (
+              <WebCam
+                onUserMedia={() => setIsWebCam(true)}
+                onUserMediaError={() => setIsWebCam(false)}
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <Video className="min-w-5 min-h-5" />
-            )
-          }
-          onClick={() => setIsWebCam(!isWebCam)}
-        />
+              <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+                <div className="flex items-center justify-center w-20 h-20 rounded-3xl bg-muted/70">
+                  <WebcamIcon className="w-10 h-10 text-muted-foreground/60" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">Camera Off</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Your video is never recorded or stored
+                  </p>
+                </div>
+              </div>
+            )}
+          </Card>
 
-        <TooltipButton
-          content={isRecording ? "Stop Recording" : "Start Recording"}
-          icon={
-            isRecording ? (
-              <CircleStop className="min-w-5 min-h-5" />
-            ) : (
-              <Mic className="min-w-5 min-h-5" />
-            )
-          }
-          onClick={recordUserAnswer}
-        />
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <TooltipButton
+              content={isWebCam ? "Turn Camera Off" : "Turn Camera On"}
+              icon={
+                isWebCam ? (
+                  <VideoOff className="w-4.5 h-4.5" />
+                ) : (
+                  <Video className="w-4.5 h-4.5" />
+                )
+              }
+              onClick={() => setIsWebCam(!isWebCam)}
+            />
 
-        <TooltipButton
-          content="Record Again"
-          icon={<RefreshCw className="min-w-5 min-h-5" />}
-          onClick={recordNewAnswer}
-        />
+            <div className="h-8 w-px bg-border mx-1" />
 
-        <TooltipButton
-          content="Save Result"
-          icon={
-            isAiGenerating ? (
-              <Loader className="min-w-5 min-h-5 animate-spin" />
-            ) : (
-              <Save className="min-w-5 min-h-5" />
-            )
-          }
-          onClick={() => setOpen(!open)}
-          disbaled={!aiResult}
-        />
-      </div>
+            <Button
+              size="sm"
+              variant={isRecording ? "destructive" : "default"}
+              onClick={recordUserAnswer}
+              className={cn(
+                "!rounded-xl !px-4",
+                isRecording && "animate-pulse"
+              )}
+            >
+              {isRecording ? (
+                <>
+                  <CircleStop className="w-4 h-4 mr-1.5" />
+                  Stop
+                </>
+              ) : (
+                <>
+                  <Mic className="w-4 h-4 mr-1.5" />
+                  Record Answer
+                </>
+              )}
+            </Button>
 
-      <div className="w-full mt-4 p-4 border rounded-md bg-gray-50">
-        <h2 className="text-lg font-semibold">Your Answer:</h2>
+            <TooltipButton
+              content="Record Again"
+              icon={<RefreshCw className="w-4.5 h-4.5" />}
+              onClick={recordNewAnswer}
+            />
 
-        <p className="text-sm mt-2 text-gray-700 whitespace-normal">
-          {userAnswer || "Start recording to see your ansewer here"}
-        </p>
+            <TooltipButton
+              content="Save Result"
+              icon={
+                isAiGenerating ? (
+                  <Loader className="w-4.5 h-4.5 animate-spin" />
+                ) : (
+                  <Save className="w-4.5 h-4.5" />
+                )
+              }
+              onClick={() => setOpen(!open)}
+              disbaled={!aiResult}
+            />
+          </div>
+        </div>
 
-        {interimResult && (
-          <p className="text-sm text-gray-500 mt-2">
-            <strong>Current Speech:</strong>
-            {interimResult}
-          </p>
-        )}
+        <div className="lg:col-span-2 flex flex-col gap-5">
+          <Card className="!hover:!shadow-card !cursor-default p-0 overflow-hidden">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-muted/70">
+                  <Mic className="w-4.5 h-4.5 text-muted-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Your Answer</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {isRecording ? "Recording in progress..." : userAnswer ? "Transcript ready" : "Start recording to begin"}
+                  </p>
+                </div>
+              </div>
+              {userAnswer && (
+                <Badge variant="outline" className="text-xs">
+                  {userAnswer.length} chars
+                </Badge>
+              )}
+            </div>
+            <div className="p-6">
+              <p className="text-sm leading-relaxed text-foreground/80 min-h-[100px] whitespace-pre-wrap">
+                {userAnswer || (
+                  <span className="text-muted-foreground/70 italic">
+                    Press &ldquo;Record Answer&rdquo; and start speaking. Your speech will appear here as text...
+                  </span>
+                )}
+              </p>
+
+              {interimResult && (
+                <div className="mt-5 pt-4 border-t border-dashed border-border">
+                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-medium">
+                    Live Speech
+                  </p>
+                  <p className="text-sm text-foreground/60 leading-relaxed">
+                    {interimResult}
+                  </p>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {aiResult && (
+            <Card className="!hover:!shadow-card !cursor-default p-0 overflow-hidden border-success/20 animate-fade-in">
+              <div className="px-6 py-4 border-b border-border bg-success/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-success/15">
+                    <Loader className="w-4.5 h-4.5 text-success" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">AI Feedback Ready</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Based on your answer
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1.5 rounded-xl bg-gradient-primary text-white text-sm font-bold shadow-button">
+                    {aiResult.ratings} / 10
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <p className="text-sm leading-relaxed text-foreground/80">
+                  {aiResult.feedback}
+                </p>
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
