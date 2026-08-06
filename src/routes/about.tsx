@@ -21,6 +21,7 @@ import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import aboutus from "@/assets/images/aboutus.jpg";
 
 const AboutPage = () => {
   useEffect(() => {
@@ -174,7 +175,7 @@ const AboutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="relative rounded-3xl overflow-hidden shadow-card-hover border border-border aspect-[4/3]">
             <img
-              src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Professional%20modern%20AI%20software%20company%20team%20collaborating%20in%20bright%20open-plan%20office%2C%20premium%20SaaS%20marketing%20illustration%2C%20soft%20lighting%2C%20indigo%20violet%20accents%2C%20high%20quality%2C%20photorealistic%2C%20no%20cartoons%2C%20no%20robots&image_size=landscape_4_3"
+              src={aboutus}
               alt="Our team working together"
               className="w-full h-full object-cover"
             />

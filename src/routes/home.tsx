@@ -5,6 +5,8 @@ import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { MarqueImg } from "@/components/marquee-img";
 import { Link } from "react-router-dom";
+import bgImage2 from "@/assets/images/bg-image.jpg";
+import aiInsight from "@/assets/images/ai-insight.jpg";
 
 const HomePage = () => {
   const stats = [
@@ -89,9 +91,9 @@ const HomePage = () => {
           })}
         </div>
 
-        <div className="relative w-full rounded-3xl overflow-hidden shadow-card-hover border border-border">
+<div className="relative w-full rounded-3xl overflow-hidden shadow-card-hover border border-border">
           <img
-            src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Modern%20professional%20AI%20assistant%20helping%20a%20developer%20practice%20coding%20interview%20on%20computer%20screen%2C%20clean%20minimalist%20office%20workspace%2C%20soft%20lighting%2C%20indigo%20and%20purple%20accent%20colors%2C%20high%20quality%2C%20premium%20SaaS%20style&image_size=landscape_16_9"
+            src={bgImage2}
             alt="AI Mock Interview Platform"
             className="w-full h-[360px] md:h-[500px] object-cover"
           />
@@ -160,8 +162,8 @@ const HomePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
           <div className="lg:col-span-3 order-2 lg:order-1">
             <div className="relative rounded-3xl overflow-hidden shadow-card-hover border border-border">
-              <img
-                src="https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Professional%20modern%20office%20workspace%20with%20two%20developers%20discussing%20technical%20interview%20questions%20at%20desk%2C%20dual%20monitors%20showing%20code%2C%20clean%20contemporary%20design%2C%20soft%20natural%20lighting%2C%20indigo%20accents%2C%20high%20quality%20photography&image_size=landscape_4_3"
+<img
+                src={aiInsight}
                 alt="Professional workspace"
                 className="w-full h-80 md:h-[480px] object-cover"
               />
